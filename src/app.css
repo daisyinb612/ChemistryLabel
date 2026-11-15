@@ -77,3 +77,12 @@ html{width:100%;min-height:100%}body{width:100%;max-width:none;height:100dvh;dis
  .annotators{width:100%}.video-title h1{font-size:20px}.label-filters>span{width:100%}
  .sequence-detail{overflow-wrap:anywhere}.sequence-detail small{white-space:normal}
 }
+
+/* Both annotation layers use all remaining track space. */
+.video-work[data-layer="Action"] .timeline-scroll{flex:1;min-height:90px}
+.video-work[data-layer="Action"] .timeline{height:100%;min-height:84px}
+.video-work[data-layer="Action"] .track{height:calc(100% - 34px);min-height:50px}
+.annotators{overflow-x:auto}.annotators>#annotatorTabs{flex:0 0 auto;min-width:0}
+.annotator-tab{max-width:210px}.annotator-text{min-width:0;text-align:left}.annotator-text strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#newAnnotator{flex-shrink:0;position:sticky;right:0;box-shadow:-4px 0 5px #f2f1ee}
+@media(max-width:1100px){.video-work[data-layer="Action"] .timeline{height:180px;min-height:0}.video-work[data-layer="Action"] .track{height:146px;min-height:0}}
