@@ -9,3 +9,6 @@ output/
 !.env.example
 
 _site/
+
+# Local video fixtures are not published.
+testvideo/
