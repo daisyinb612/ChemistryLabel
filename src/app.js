@@ -48,6 +48,7 @@ V.ontimeupdate=updateTime;V.onplay=()=>{$('play').innerHTML=icon('pause')};V.onp
 function seek(t){if(!ready||loadedTask!==task()?.id){toast('请先载入可播放的视频');return}V.currentTime=Math.min(task().duration,Math.max(0,t));updateTime()}
 $('play').onclick=()=>{if(!ready){toast('请先载入可播放的视频');return}if(V.paused)V.play().catch(()=>toast('视频播放失败'));else V.pause()};$('back').onclick=()=>seek(V.currentTime-1);$('next').onclick=()=>seek(V.currentTime+1);$('rate').onchange=()=>V.playbackRate=Number($('rate').value);$('mute').onclick=()=>{V.muted=!V.muted;$('mute').title=V.muted?'取消静音':'静音';$('mute').setAttribute('aria-label',$('mute').title);$('mute').style.opacity=V.muted?'.4':'1'};
 function renderPhases(){
+ document.querySelector('.video-work').dataset.layer=activeLayer;
  $('phaseLabels').innerHTML=PHASES.map((p,i)=>`<button data-phase="${p.id}" class="${activePhase===p.id?'active':''}" style="--color:${p.color}">${p.id} ${esc(p.name)}<kbd>${i+1}</kbd></button>`).join('');
  const actions=DATA.actions.filter(a=>a.phase===activePhase);if(!actions.some(a=>a.id===activeAction))activeAction=actions[0]?.id||'';
  $('actionLabels').hidden=activeLayer!=='Action';
@@ -59,8 +60,8 @@ function renderPhases(){
 function setLayer(layer){activeLayer=layer;selected=null;renderPhases();renderTimeline();renderRegions();renderDetail()}
 document.querySelectorAll('[name="labelLayer"]').forEach(r=>r.onchange=()=>setLayer(r.value));
 $('actionLabels').onclick=e=>{const b=e.target.closest('[data-action]');if(b){activeAction=b.dataset.action;renderPhases()}};
-function showInspector(panel){$('scorePanel').hidden=panel!=='score';$('regionPanel').hidden=panel!=='regions';for(const [id,name] of [['scoreTab','score'],['regionsTab','regions']]){$(id).classList.toggle('active',panel===name);$(id).setAttribute('aria-pressed',String(panel===name))}}
-$('scoreTab').onclick=()=>showInspector('score');$('regionsTab').onclick=()=>showInspector('regions');
+function showInspector(panel){$('scorePanel').hidden=panel!=='score';$('regionPanel').hidden=panel!=='regions';$('sequencePanel').hidden=panel!=='sequence';for(const [id,name] of [['scoreTab','score'],['regionsTab','regions'],['sequenceTab','sequence']]){$(id).classList.toggle('active',panel===name);$(id).setAttribute('aria-pressed',String(panel===name))}}
+$('scoreTab').onclick=()=>showInspector('score');$('regionsTab').onclick=()=>showInspector('regions');$('sequenceTab').onclick=()=>showInspector('sequence');
 $('phaseLabels').onclick=e=>{const b=e.target.closest('[data-phase]');if(b){activePhase=b.dataset.phase;selected=null;renderPhases();renderTimeline();renderRegions();renderDetail()}};
 function blocks(){
  const d=task()?.duration||0;if(!ann()||!d)return '';
@@ -73,7 +74,7 @@ function renderTimeline(){const d=task()?.duration||0;$('timeline').style.width=
 function renderSequence(){
  const regions=(ann()?.regions||[]).filter(r=>regionLayer(r)==='Phase').slice().sort((a,b)=>a.start-b.start||a.end-b.end);
  $('sequenceCount').textContent=regions.length+' 个编码';
- $('sequenceItems').innerHTML=regions.length?regions.map((r,i)=>`${i?'<span class="sequence-arrow" aria-hidden="true">→</span>':''}<button class="sequence-chip ${r.id===selected?'active':''}" data-sequence-region="${esc(r.id)}" style="--color:${phase(r.phase).color}" title="${esc(phase(r.phase).name)} · 第${r.round}轮 · ${fmt(r.start)}—${fmt(r.end)}" aria-label="${esc(r.phase+' '+phase(r.phase).name)}，第${r.round}轮，${fmt(r.start)}至${fmt(r.end)}">${esc(r.phase)}</button>`).join(''):'<span class="sequence-empty">完成 Phase 分段后，将按时间顺序自动生成行为序列。</span>';
+ $('sequenceItems').innerHTML=regions.length?regions.map((r,i)=>`${i?'<span class="sequence-arrow" aria-hidden="true">↓</span>':''}<button class="sequence-chip ${r.id===selected?'active':''}" data-sequence-region="${esc(r.id)}" style="--color:${phase(r.phase).color}" title="${esc(phase(r.phase).name)} · 第${r.round}轮 · ${fmt(r.start)}—${fmt(r.end)}" aria-label="${esc(r.phase+' '+phase(r.phase).name)}，第${r.round}轮，${fmt(r.start)}至${fmt(r.end)}">${esc(r.phase)}<span class="sequence-detail">${esc(phase(r.phase).name)}<small>第${r.round}轮 · ${fmt(r.start)}—${fmt(r.end)}</small></span></button>`).join(''):'<span class="sequence-empty">完成 Phase 分段后，将按时间顺序自动生成行为序列。</span>';
 }
 $('sequenceItems').onclick=e=>{
  const button=e.target.closest('[data-sequence-region]');if(!button)return;

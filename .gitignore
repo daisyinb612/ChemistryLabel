@@ -11,4 +11,4 @@ output/
 _site/
 
 # Local video fixtures are not published.
-testvideo/
+/testvideo/
